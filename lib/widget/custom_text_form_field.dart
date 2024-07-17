@@ -19,6 +19,9 @@ class CustomTextFormField extends StatefulWidget {
     this.keyboardType,
     this.autofillHints,
     this.readOnly = false,
+    this.enabled = true,
+    this.focusNode,
+    this.controller,
   });
 
   final String? labelText;
@@ -34,40 +37,47 @@ class CustomTextFormField extends StatefulWidget {
   final TextInputType? keyboardType;
   final Iterable<String>? autofillHints;
   final bool readOnly;
+  final bool enabled;
+  final FocusNode? focusNode;
+  final TextEditingController? controller;
 
   @override
-  State createState() => _State();
+  State createState() => _CustomTextFormFieldState();
 }
 
-class _State extends State<CustomTextFormField> {
-  final _key = GlobalKey<FormFieldState>();
-  final _controller = TextEditingController();
-  final _focusNode = FocusNode();
-
+class _CustomTextFormFieldState extends State<CustomTextFormField> {
+  final GlobalKey<FormFieldState> _key = GlobalKey<FormFieldState>();
+  late TextEditingController _controller;
+  late FocusNode _focusNode;
   bool _hasError = false;
 
   @override
   void initState() {
     super.initState();
+    _controller = widget.controller ?? TextEditingController();
+    _focusNode = widget.focusNode ?? FocusNode();
 
-    _controller.text = widget.initialValue ?? "";
+    if (widget.initialValue != null) {
+      _controller.text = widget.initialValue!;
+    }
 
     _controller.addListener(() {
-      setState(() {
-        // This causes rebuild so that we can update x mark icon
-      });
+      setState(() {});
     });
 
     _focusNode.addListener(() {
-      setState(() {
-        // This causes rebuild so that we can update x mark icon
-      });
+      setState(() {});
     });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (widget.controller == null) {
+      _controller.dispose();
+    }
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
     super.dispose();
   }
 
@@ -88,29 +98,21 @@ class _State extends State<CustomTextFormField> {
 
   @override
   Widget build(BuildContext context) {
-    final Widget? suffixIcon;
-
-    if (widget.readOnly) {
-      suffixIcon = null;
-    } else {
-      if (_hasError) {
-        suffixIcon = const Icon(Icons.warning, color: Colors.red);
-      } else if (_controller.text.isNotEmpty && _focusNode.hasFocus) {
-        suffixIcon = Transform(
-          transform: Matrix4.translationValues(0, 8, 0),
-          child: IconButton(
-            focusNode: FocusNode(skipTraversal: true),
-            icon: const Icon(Icons.clear, color: Colors.black),
-            onPressed: () {
-              _controller.clear();
-              widget.onChanged?.call("");
-            },
-          ),
-        );
-      } else {
-        suffixIcon = null;
-      }
-    }
+    final Widget? suffixIcon = _hasError
+        ? const Icon(Icons.warning, color: Colors.red)
+        : _controller.text.isNotEmpty && _focusNode.hasFocus
+            ? Transform(
+                transform: Matrix4.translationValues(0, 8, 0),
+                child: IconButton(
+                  focusNode: FocusNode(skipTraversal: true),
+                  icon: const Icon(Icons.clear, color: Colors.black),
+                  onPressed: () {
+                    _controller.clear();
+                    widget.onChanged?.call("");
+                  },
+                ),
+              )
+            : null;
 
     return TextFormField(
       key: _key,
@@ -118,7 +120,8 @@ class _State extends State<CustomTextFormField> {
       focusNode: _focusNode,
       style: const TextStyle(fontSize: 14, color: Colors.black),
       validator: _validate,
-      autovalidateMode: null,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      enabled: widget.enabled,
       textCapitalization: widget.textCapitalization,
       maxLength: widget.maxLength,
       textInputAction: widget.textInputAction,
@@ -135,7 +138,7 @@ class _State extends State<CustomTextFormField> {
           borderRadius: BorderRadius.circular(6),
           borderSide: BorderSide.none,
         ),
-        focusedBorder: widget.readOnly
+        focusedBorder: !widget.readOnly
             ? null
             : OutlinedInputBorder(
                 borderRadius: BorderRadius.circular(6),
@@ -143,17 +146,12 @@ class _State extends State<CustomTextFormField> {
                   color: Colors.black.withOpacity(0.1),
                   width: 2,
                 ),
-                innerBorderSide: BorderSide(
-                  color: Colors.black.withOpacity(0.05),
-                  width: 1,
-                ),
               ),
         labelText: widget.labelText,
         label: widget.label,
         labelStyle: const TextStyle(fontSize: 14, color: Colors.black),
         floatingLabelStyle: const TextStyle(fontSize: 12, color: Colors.black),
-        errorStyle:
-            TextStyle(fontSize: 14, color: Colors.black.withOpacity(0.5)),
+        errorStyle: const TextStyle(fontSize: 14, color: Colors.red),
         hintStyle:
             TextStyle(fontSize: 14, color: Colors.black.withOpacity(0.5)),
         suffixIcon: suffixIcon,

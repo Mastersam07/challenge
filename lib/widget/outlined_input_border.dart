@@ -159,12 +159,12 @@ class OutlinedInputBorder extends InputBorder {
 }
 
 abstract class MaterialStateOutlinedInputBorder extends OutlinedInputBorder
-    implements MaterialStateProperty<InputBorder> {
+    implements WidgetStateProperty<InputBorder> {
   /// Abstract const constructor. This constructor enables subclasses to provide
   /// const constructors so that they can be used in const expressions.
   const MaterialStateOutlinedInputBorder();
 
-  /// Creates a [MaterialStateOutlinedInputBorder] from a [MaterialPropertyResolver<InputBorder>]
+  /// Creates a [MaterialStateOutlinedInputBorder] from a [WidgetPropertyResolver<InputBorder>]
   /// callback function.
   ///
   /// If used as a regular input border, the border resolved in the default state (the
@@ -173,28 +173,28 @@ abstract class MaterialStateOutlinedInputBorder extends OutlinedInputBorder
   /// The given callback parameter must return a non-null text style in the default
   /// state.
   static MaterialStateOutlinedInputBorder resolveWith(
-          MaterialPropertyResolver<InputBorder> callback) =>
+          WidgetPropertyResolver<InputBorder> callback) =>
       _MaterialStateOutlinedInputBorder(callback);
 
   /// Returns a [InputBorder] that's to be used when a Material component is in the
   /// specified state.
   @override
-  InputBorder resolve(Set<MaterialState> states);
+  InputBorder resolve(Set<WidgetState> states);
 }
 
-/// A [MaterialStateOutlinedInputBorder] created from a [MaterialPropertyResolver<OutlinedInputBorder>]
+/// A [MaterialStateOutlinedInputBorder] created from a [WidgetPropertyResolver<OutlinedInputBorder>]
 /// callback alone.
 ///
 /// If used as a regular input border, the border resolved in the default state will
 /// be used.
 ///
-/// Used by [MaterialStateTextStyle.resolveWith].
+/// Used by [WidgetStateTextStyle.resolveWith].
 class _MaterialStateOutlinedInputBorder
     extends MaterialStateOutlinedInputBorder {
   const _MaterialStateOutlinedInputBorder(this._resolve);
 
-  final MaterialPropertyResolver<InputBorder> _resolve;
+  final WidgetPropertyResolver<InputBorder> _resolve;
 
   @override
-  InputBorder resolve(Set<MaterialState> states) => _resolve(states);
+  InputBorder resolve(Set<WidgetState> states) => _resolve(states);
 }
