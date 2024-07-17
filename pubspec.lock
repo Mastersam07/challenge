@@ -192,6 +192,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.0"
+  us_states:
+    dependency: "direct main"
+    description:
+      name: us_states
+      sha256: "1abc927838eb3db1a7e3f8904400da7b62cd6cd6b21844b2b3f3dbbd1f299475"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   vector_math:
     dependency: transitive
     description:
