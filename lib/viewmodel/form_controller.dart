@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import '../model/address.dart';
-import '../../repository.dart';
+import '../data/model/address.dart';
+import '../data/repository.dart';
 
 class FormController {
   FormController({Repository? repo}) {
@@ -20,6 +22,15 @@ class FormController {
   final ValueNotifier<bool> isSubmitting = ValueNotifier(false);
   final ValueNotifier<bool> hasError = ValueNotifier(false);
   final ValueNotifier<String?> errorMessage = ValueNotifier(null);
+
+  Timer? _debounce;
+
+  void onStreetChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      filterSuggestions(query);
+    });
+  }
 
   Future<List<Address>> filterSuggestions(String query) async {
     try {
@@ -83,5 +94,13 @@ class FormController {
     cityController.clear();
     zipController.clear();
     filteredSuggestions.value = [];
+  }
+
+  void dispose() {
+    streetController.dispose();
+    line2Controller.dispose();
+    cityController.dispose();
+    zipController.dispose();
+    _debounce?.cancel();
   }
 }

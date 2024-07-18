@@ -4,7 +4,7 @@ import 'package:benjamin/widget/custom_dropdown_form_field.dart';
 import 'package:flutter/services.dart';
 import 'package:us_states/us_states.dart';
 
-import 'data/viewmodel/form_controller.dart';
+import 'viewmodel/form_controller.dart';
 import 'data/model/address.dart';
 
 void main() {
@@ -21,21 +21,30 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  final FormController? formController;
+  const MyHomePage({super.key, this.formController});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final FormController _formController = FormController();
+  late FormController _formController;
+
+  @override
+  void initState() {
+    super.initState();
+    _formController = widget.formController ?? FormController();
+  }
 
   @override
   void dispose() {
-    _formController.streetController.dispose();
-    _formController.line2Controller.dispose();
-    _formController.cityController.dispose();
-    _formController.zipController.dispose();
+    if (widget.formController == null) {
+      _formController.streetController.dispose();
+      _formController.line2Controller.dispose();
+      _formController.cityController.dispose();
+      _formController.zipController.dispose();
+    }
     super.dispose();
   }
 
@@ -96,6 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                       focusNode: focusNode,
                       onChanged: (value) {
+                        _formController.onStreetChanged(value);
                         if (value.isEmpty) {
                           _formController.clearFormFields();
                         }
@@ -109,12 +119,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   readOnly: true,
                   enabled: false,
                   labelText: "Street address line 2",
-                  validator: (value) {
-                    if (value == null || value.isEmpty == true) {
-                      return "Street address line 2 cannot be empty";
-                    }
-                    return null;
-                  },
+                  // validator: (value) {
+                  //   if (value == null || value.isEmpty == true) {
+                  //     return "Street address line 2 cannot be empty";
+                  //   }
+                  //   return null;
+                  // },
                   inputFormatters: [
                     LengthLimitingTextInputFormatter(100),
                     FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9\s]')),

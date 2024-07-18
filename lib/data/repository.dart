@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'data/model/address.dart';
+import 'model/address.dart';
 
 class Repository {
   final List<Address> _addressSuggestions = [
