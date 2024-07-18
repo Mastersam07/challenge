@@ -12,7 +12,7 @@ class FormController {
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  TextEditingController streetController = TextEditingController();
+  final TextEditingController streetController = TextEditingController();
   final TextEditingController line2Controller = TextEditingController();
   final TextEditingController cityController = TextEditingController();
   final TextEditingController zipController = TextEditingController();

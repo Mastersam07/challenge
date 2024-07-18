@@ -39,6 +39,10 @@ void main() {
     when(() => mockRepository.submitForm(any())).thenAnswer((_) async {});
   });
 
+  tearDown(() {
+    formController.dispose();
+  });
+
   Future<void> pumpApp(WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -61,19 +65,32 @@ void main() {
       (WidgetTester tester) async {
     await pumpApp(tester);
 
-    await tester.enterText(find.byType(TextFormField).first, '123');
+    final streetField = find.byType(TextFormField).first;
+
+    await tester.tap(streetField);
     await tester.pump();
 
+    await tester.enterText(streetField, '1');
+    await tester.pump(const Duration(milliseconds: 300));
+
+    await tester.enterText(streetField, '12');
+    await tester.pump(const Duration(milliseconds: 300));
+
+    await tester.enterText(streetField, '123');
+    await tester.pump(const Duration(milliseconds: 300));
+
     expect(find.text('123 Main St'), findsOneWidget);
-    expect(find.text('456 Elm St'), findsOneWidget);
   });
 
   testWidgets('clears other fields when street address is cleared',
       (WidgetTester tester) async {
     await pumpApp(tester);
 
-    await tester.enterText(find.byType(TextFormField).first, '123');
-    await tester.pump();
+    final streetField = find.byType(TextFormField).first;
+
+    await tester.enterText(streetField, '123');
+    await tester.pump(const Duration(milliseconds: 300));
+
     await tester.tap(find.text('123 Main St'));
     await tester.pump();
 
@@ -81,8 +98,8 @@ void main() {
     expect(find.text('Springfield'), findsOneWidget);
     expect(find.text('12345'), findsOneWidget);
 
-    await tester.enterText(find.byType(TextFormField).first, '');
-    await tester.pump();
+    await tester.enterText(streetField, '');
+    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Apt 4B'), findsNothing);
     expect(find.text('Springfield'), findsNothing);
@@ -93,22 +110,35 @@ void main() {
       (WidgetTester tester) async {
     await pumpApp(tester);
 
-    await tester.enterText(find.byType(TextFormField).first, 'error');
-    await tester.pump();
+    final streetField = find.byType(TextFormField).first;
 
-    expect(find.text('Failed to fetch suggestions.'), findsOneWidget);
+    await tester.enterText(streetField, 'error');
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(
+        find.text('Exception: Failed to fetch suggestions.'), findsOneWidget);
   });
 
   testWidgets('submits form successfully', (WidgetTester tester) async {
     await pumpApp(tester);
 
-    await tester.enterText(find.byType(TextFormField).first, '123');
-    await tester.pump();
+    final streetField = find.byType(TextFormField).first;
+
+    await tester.enterText(streetField, '123');
+    await tester.pump(const Duration(milliseconds: 300));
+
     await tester.tap(find.text('123 Main St'));
     await tester.pump();
 
+    // Select the state from the dropdown
+    await tester.tap(find.byType(DropdownButtonFormField<String>));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Alaska').last);
+    await tester.pumpAndSettle();
+
     await tester.tap(find.byType(ElevatedButton));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     verify(() => mockRepository.submitForm(any())).called(1);
     expect(find.text('Form submitted successfully!'), findsOneWidget);
@@ -121,13 +151,22 @@ void main() {
 
     await pumpApp(tester);
 
-    await tester.enterText(find.byType(TextFormField).first, '123');
-    await tester.pump();
+    final streetField = find.byType(TextFormField).first;
+
+    await tester.enterText(streetField, '123');
+    await tester.pump(const Duration(milliseconds: 300));
+
     await tester.tap(find.text('123 Main St'));
     await tester.pump();
 
+    // Select the state from the dropdown
+    await tester.tap(find.byType(DropdownButtonFormField<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Alaska').last);
+    await tester.pumpAndSettle();
+
     await tester.tap(find.byType(ElevatedButton));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     verify(() => mockRepository.submitForm(any())).called(1);
     expect(

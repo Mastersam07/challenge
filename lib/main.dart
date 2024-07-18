@@ -39,12 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
-    if (widget.formController == null) {
-      _formController.streetController.dispose();
-      _formController.line2Controller.dispose();
-      _formController.cityController.dispose();
-      _formController.zipController.dispose();
-    }
+    if (widget.formController == null) _formController.dispose();
     super.dispose();
   }
 
@@ -86,11 +81,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     BuildContext context,
                     TextEditingController textEditingController,
                     FocusNode focusNode,
-                    VoidCallback onFieldSubmitted,
+                    VoidCallback __,
                   ) {
-                    _formController.streetController = textEditingController;
                     return CustomTextFormField(
-                      controller: _formController.streetController,
+                      controller: textEditingController,
                       labelText: "Street address",
                       validator: (value) {
                         if (value == null || value.isEmpty) {
