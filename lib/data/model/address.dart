@@ -12,9 +12,4 @@ class Address {
     required this.zip,
     this.state,
   });
-
-  @override
-  String toString() {
-    return street;
-  }
 }

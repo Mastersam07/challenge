@@ -98,7 +98,12 @@ void main() {
     expect(find.text('Springfield'), findsOneWidget);
     expect(find.text('12345'), findsOneWidget);
 
-    await tester.enterText(streetField, '');
+    // Find and tap the suffix icon to clear the text field
+    final suffixIcon = find.descendant(
+      of: streetField,
+      matching: find.byIcon(Icons.clear),
+    );
+    await tester.tap(suffixIcon);
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Apt 4B'), findsNothing);

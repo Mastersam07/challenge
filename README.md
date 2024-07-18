@@ -1,5 +1,7 @@
 # Benjamin coding challenge
 
+[![codecov](https://codecov.io/gh/Mastersam07/challenge/graph/badge.svg?token=CljoRHDZAG)](https://codecov.io/gh/Mastersam07/challenge)
+
 Welcome to Benjamin coding skill challenge for Flutter engineers.
 
 ## Brief
